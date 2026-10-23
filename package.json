@@ -1,0 +1,11 @@
+{
+  "name": "afiliado-auto-root",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev:web": "npm --prefix web run dev",
+    "dev:worker": "npm --prefix whatsapp-worker run start",
+    "build:web": "npm --prefix web run build",
+    "start:web": "npm --prefix web run start"
+  }
+}

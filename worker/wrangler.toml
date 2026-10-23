@@ -1,0 +1,54 @@
+name = "afiliado-auto-api"
+main = "src/index.ts"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+# ------------------------------------------------------------------------------
+# CLOUDFLARE D1 (Banco Operacional Principal)
+# Execute: wrangler d1 create afiliado-auto-db
+# e insira o database_id retornado abaixo
+# ------------------------------------------------------------------------------
+[[d1_databases]]
+binding = "DB"
+database_name = "afiliado-auto-db"
+database_id = "local-d1-placeholder" # Substitua com o ID gerado pelo `wrangler d1 create`
+migrations_dir = "migrations"
+
+# ------------------------------------------------------------------------------
+# CLOUDFLARE QUEUES (Processamento Assíncrono de Links em Lote)
+# Execute: wrangler queues create afiliado-auto-import-queue
+# ------------------------------------------------------------------------------
+[[queues.producers]]
+binding = "IMPORT_QUEUE"
+queue = "afiliado-auto-import-queue"
+
+[[queues.consumers]]
+queue = "afiliado-auto-import-queue"
+max_batch_size = 10
+max_batch_timeout = 5
+max_retries = 3
+
+# ------------------------------------------------------------------------------
+# CRON TRIGGERS (Agendador Automático no Backend)
+# Executa a cada minuto para processar jobs de disparo das automações ativas
+# ------------------------------------------------------------------------------
+[triggers]
+crons = ["* * * * *"]
+
+# ------------------------------------------------------------------------------
+# CLOUDFLARE R2 (Armazenamento Temporário de Arquivos Importados)
+# Execute: wrangler r2 bucket create afiliado-auto-uploads
+# ------------------------------------------------------------------------------
+[[r2_buckets]]
+binding = "UPLOADS_BUCKET"
+bucket_name = "afiliado-auto-uploads"
+
+# ------------------------------------------------------------------------------
+# VARIÁVEIS DE AMBIENTE (PÚBLICAS / NÃO SENSÍVEIS)
+# Secrets sensíveis como SHOPEE_APP_SECRET, OPENWA_API_KEY e JWT_SECRET devem
+# ser configurados via `wrangler secret put <NOME>`
+# ------------------------------------------------------------------------------
+[vars]
+ENVIRONMENT = "production"
+TIMEZONE = "America/Bahia"
+OPENWA_BASE_URL = "http://127.0.0.1:8080" # Em produção: https://openwa.seudominio.com via Cloudflare Tunnel

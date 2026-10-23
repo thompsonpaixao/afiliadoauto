@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  whatsapp-worker:
+    build: .
+    container_name: afiliado-auto-whatsapp-worker
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - WORKER_API_KEY=afiliado-auto-secret-key-2026
+    volumes:
+      - ./data:/app/data
+      - ./.wa-session:/app/.wa-session

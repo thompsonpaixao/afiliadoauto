@@ -1,0 +1,16 @@
+# Exemplo de configuração do Cloudflare Tunnel (cloudflared) para a Evolution API (Baileys)
+# Salve como ~/.cloudflared/config.yml ou no diretório do seu túnel
+
+tunnel: SEU_TUNNEL_UUID_AQUI
+credentials-file: C:\Users\SeuUsuario\.cloudflared\SEU_TUNNEL_UUID_AQUI.json
+
+ingress:
+  # Rota pública para a Evolution API do WhatsApp
+  - hostname: evolution.seudominio.com
+    service: http://127.0.0.1:8080
+    originRequest:
+      connectTimeout: 30s
+      noTLSVerify: false
+
+  # Regra de fallback obrigatória do Cloudflare Tunnel
+  - service: http_status:404
